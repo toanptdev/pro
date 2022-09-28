@@ -2,6 +2,8 @@ package restaurantstore
 
 import (
 	"context"
+	"gorm.io/gorm"
+	"rest-api/common"
 	"rest-api/modules/restaurant/restaurantmodel"
 )
 
@@ -14,7 +16,10 @@ func (s *sqlStore) FindDataByCondition(ctx context.Context, conditions map[strin
 	}
 
 	if err := db.Where(conditions).First(&restaurant).Error; err != nil {
-		return nil, err
+		if err == gorm.ErrRecordNotFound {
+			return nil, common.ErrorRecordNotFound
+		}
+		return nil, common.ErrDB(err)
 	}
 
 	return restaurant, nil

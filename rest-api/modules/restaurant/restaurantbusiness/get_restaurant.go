@@ -2,7 +2,7 @@ package restaurantbusiness
 
 import (
 	"context"
-	"errors"
+	"rest-api/common"
 	"rest-api/modules/restaurant/restaurantmodel"
 )
 
@@ -21,11 +21,14 @@ func NewGetRestaurantBusiness(store GetRestaurantStore) *getRestaurantBusiness {
 func (g *getRestaurantBusiness) GetRestaurant(ctx context.Context, id int) (*restaurantmodel.Restaurant, error) {
 	data, err := g.store.FindDataByCondition(ctx, map[string]interface{}{"id": id})
 	if err != nil {
-		return nil, err
+		if err == common.ErrorRecordNotFound {
+			return nil, common.ErrCantGetEntity(restaurantmodel.EntityName, err)
+		}
+		return nil, common.ErrCantGetEntity(restaurantmodel.EntityName, err)
 	}
 
 	if data.Status == 0 {
-		return nil, errors.New("restaurant has been deleted")
+		return nil, common.ErrEntityDeleted(restaurantmodel.EntityName, nil)
 	}
 
 	return data, nil
