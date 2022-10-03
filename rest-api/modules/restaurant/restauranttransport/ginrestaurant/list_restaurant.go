@@ -1,11 +1,12 @@
 package ginrestaurant
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"rest-api/common"
 	"rest-api/component"
+	"rest-api/modules/restaurant/restaurantrepository"
+	restaurantlikestorage "rest-api/modules/restaurantlike/store"
 
 	"rest-api/modules/restaurant/restaurantbusiness"
 	"rest-api/modules/restaurant/restaurantmodel"
@@ -35,14 +36,19 @@ func ListRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 		paging.Fulfill()
 
 		store := restaurantstore.NewSqlStore(appCtx.GetMainDBConnection())
-		business := restaurantbusiness.NewListRestaurantBusiness(store)
+		likeStore := restaurantlikestorage.NewSqlStore(appCtx.GetMainDBConnection())
+		repository := restaurantrepository.NewRestaurantLikeRepository(store, likeStore)
+		business := restaurantbusiness.NewListRestaurantBusiness(repository)
 		result, err := business.ListRestaurant(c.Request.Context(), &filter, &paging)
-		fmt.Println(err)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err,
 			})
 			return
+		}
+
+		for i := range result {
+			result[i].Mask(false)
 		}
 
 		c.JSON(http.StatusOK, common.NewSuccessResp(result, paging, filter))
