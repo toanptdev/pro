@@ -8,17 +8,13 @@ import (
 	"rest-api/modules/restaurant/restaurantbusiness"
 	"rest-api/modules/restaurant/restaurantmodel"
 	"rest-api/modules/restaurant/restaurantstore"
-	"strconv"
 )
 
 func UpdateRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		id, err := strconv.Atoi(c.Param("id"))
+		uid, err := common.FromBase58(c.Param("id"))
 		if err != nil {
-			c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"error": err,
-			})
-			return
+			panic(common.ErrInvalidRequest(err))
 		}
 
 		var data restaurantmodel.RestaurantUpdates
@@ -32,7 +28,7 @@ func UpdateRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 		store := restaurantstore.NewSqlStore(appCtx.GetMainDBConnection())
 		updateRestaurantBusiness := restaurantbusiness.NewUpdateRestaurantStore(store)
 
-		if err := updateRestaurantBusiness.UpdateRestaurant(c.Request.Context(), id, &data); err != nil {
+		if err := updateRestaurantBusiness.UpdateRestaurant(c.Request.Context(), int(uid.GetLocationID()), &data); err != nil {
 			c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"error": err,
 			})

@@ -28,7 +28,7 @@ func CreateRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 				"error": err,
 			})
 		}
-
-		c.JSON(http.StatusOK, common.SimpleSuccessResponse(data))
+		data.GenerateUID(common.DBTypeRestaurant)
+		c.JSON(http.StatusOK, common.SimpleSuccessResponse(data.FakeID.String()))
 	}
 }

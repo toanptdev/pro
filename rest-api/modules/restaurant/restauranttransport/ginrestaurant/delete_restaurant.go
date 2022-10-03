@@ -7,22 +7,19 @@ import (
 	"rest-api/component"
 	"rest-api/modules/restaurant/restaurantbusiness"
 	"rest-api/modules/restaurant/restaurantstore"
-	"strconv"
 )
 
 func DeleteRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		id, err := strconv.Atoi(c.Param("id"))
+		uid, err := common.FromBase58(c.Param("id"))
 		if err != nil {
-			c.JSON(http.StatusBadRequest, map[string]interface{}{
-				"error": err,
-			})
+			panic(common.ErrInvalidRequest(err))
 		}
 
 		store := restaurantstore.NewSqlStore(appCtx.GetMainDBConnection())
 		deleteRestaurantBusiness := restaurantbusiness.NewDeleteRestaurantStore(store)
 
-		if err := deleteRestaurantBusiness.DeleteRestaurant(c.Request.Context(), id); err != nil {
+		if err := deleteRestaurantBusiness.DeleteRestaurant(c.Request.Context(), int(uid.GetLocationID())); err != nil {
 			c.JSON(http.StatusBadRequest, map[string]interface{}{
 				"error": err,
 			})

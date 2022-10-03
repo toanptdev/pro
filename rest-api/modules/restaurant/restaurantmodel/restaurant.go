@@ -13,6 +13,7 @@ type Restaurant struct {
 	common.SQLModel `json:",inline"`
 	Name            string `json:"name" gorm:"column:name"`
 	Addr            string `json:"addr" gorm:"column:addr"`
+	LikedCount      int    `json:"liked_count" gorm:"-"`
 }
 
 func (r Restaurant) TableName() string {
@@ -29,9 +30,9 @@ func (r RestaurantUpdates) TableName() string {
 }
 
 type RestaurantCreate struct {
-	Id   int    `json:"id" gorm:"column:id"`
-	Name string `json:"name" gorm:"column:name"`
-	Addr string `json:"addr" gorm:"column:addr"`
+	common.SQLModel `json:",inline"`
+	Name            string `json:"name" gorm:"column:name"`
+	Addr            string `json:"addr" gorm:"column:addr"`
 }
 
 func (r RestaurantCreate) TableName() string {
@@ -45,4 +46,8 @@ func (r *RestaurantCreate) Validate() error {
 	}
 
 	return nil
+}
+
+func (r *Restaurant) Mask(isAdminOwner bool) {
+	r.GenerateUID(common.DBTypeRestaurant)
 }

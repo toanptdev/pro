@@ -2,31 +2,24 @@ package restaurantbusiness
 
 import (
 	"context"
-
 	"rest-api/common"
 	"rest-api/modules/restaurant/restaurantmodel"
 )
 
-type ListRestaurantStore interface {
-	ListDataByCondition(
-		ctx context.Context,
-		conditions map[string]interface{},
-		filter *restaurantmodel.Filter,
-		paging *common.Paging,
-		moreKeys ...string,
-	) ([]restaurantmodel.Restaurant, error)
+type ListRestaurantLikeRepository interface {
+	GetListRestaurantLike(ctx context.Context, filter *restaurantmodel.Filter, paging *common.Paging) ([]restaurantmodel.Restaurant, error)
 }
 
 type listRestaurantBusiness struct {
-	store ListRestaurantStore
+	repository ListRestaurantLikeRepository
 }
 
-func NewListRestaurantBusiness(store ListRestaurantStore) *listRestaurantBusiness {
-	return &listRestaurantBusiness{store: store}
+func NewListRestaurantBusiness(repository ListRestaurantLikeRepository) *listRestaurantBusiness {
+	return &listRestaurantBusiness{repository: repository}
 }
 
 func (l *listRestaurantBusiness) ListRestaurant(ctx context.Context, filter *restaurantmodel.Filter, paging *common.Paging) ([]restaurantmodel.Restaurant, error) {
-	result, err := l.store.ListDataByCondition(ctx, nil, filter, paging)
+	result, err := l.repository.GetListRestaurantLike(ctx, filter, paging)
 	if err != nil {
 		return nil, err
 	}
