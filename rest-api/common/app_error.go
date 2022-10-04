@@ -82,3 +82,30 @@ func ErrInternal(err error) *AppError {
 func ErrInvalidRequest(err error) *AppError {
 	return NewFullErrorResponse(http.StatusBadRequest, err, "invalid request", err.Error(), "ErrInvalidRequest")
 }
+
+func ErrEntityExisted(err error, entity string) *AppError {
+	return NewFullErrorResponse(
+		http.StatusBadRequest,
+		err,
+		fmt.Sprintf("%v already exist", strings.ToLower(entity)),
+		err.Error(),
+		fmt.Sprintf("Err%vExist", entity))
+}
+
+func ErrCannotCreateEntity(err error, entity string) *AppError {
+	return NewFullErrorResponse(
+		http.StatusBadRequest,
+		err,
+		fmt.Sprintf("can not create %v", strings.ToLower(entity)),
+		err.Error(),
+		fmt.Sprintf("ErrCannotCreate%v", entity),
+	)
+}
+
+func ErrNoPermission(err error) *AppError {
+	return NewCustomError(
+		err,
+		"dont have permission",
+		"ErrNoPermission",
+	)
+}
