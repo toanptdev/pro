@@ -6,6 +6,7 @@ import (
 	"os"
 	"rest-api/component"
 	"rest-api/middleware"
+	"rest-api/modules/users/transport/ginuser"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -17,6 +18,7 @@ import (
 
 func main() {
 	dsn := os.Getenv("DBConnectionStr")
+	secret := os.Getenv("secret")
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
@@ -24,11 +26,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	runService(db)
+	runService(db, secret)
 }
 
-func runService(db *gorm.DB) error {
-	appContext := component.NewAppContext(db)
+func runService(db *gorm.DB, secret string) error {
+	appContext := component.NewAppContext(db, secret)
 	r := gin.Default()
 	r.Use(middleware.Recover(appContext))
 	r.GET("/ping", func(c *gin.Context) {
@@ -37,7 +39,12 @@ func runService(db *gorm.DB) error {
 		})
 	})
 
-	restaurant := r.Group("/restaurants")
+	v1 := r.Group("/v1")
+
+	v1.POST("/register", ginuser.Register(appContext))
+	v1.POST("/login", ginuser.Login(appContext))
+	v1.GET("/profile", middleware.RequireAuth(appContext), ginuser.GetProfile(appContext))
+	restaurant := v1.Group("/restaurants", middleware.RequireAuth(appContext))
 	{
 		restaurant.POST("", ginrestaurant.CreateRestaurant(appContext))
 		restaurant.GET("", ginrestaurant.ListRestaurant(appContext))

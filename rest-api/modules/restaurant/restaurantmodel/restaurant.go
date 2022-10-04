@@ -33,6 +33,7 @@ type RestaurantCreate struct {
 	common.SQLModel `json:",inline"`
 	Name            string `json:"name" gorm:"column:name"`
 	Addr            string `json:"addr" gorm:"column:addr"`
+	OwnerID         int    `json:"-" gorm:"column:owner_id"`
 }
 
 func (r RestaurantCreate) TableName() string {

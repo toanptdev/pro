@@ -16,17 +16,17 @@ func CreateRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 		var data restaurantmodel.RestaurantCreate
 
 		if err := c.ShouldBind(&data); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err,
-			})
+			panic(err)
 		}
+
+		requester := c.MustGet("user").(common.Requester)
+
+		data.OwnerID = requester.GetUserID()
 
 		store := restaurantstore.NewSqlStore(appCtx.GetMainDBConnection())
 		business := restaurantbusiness.NewCreateRestaurantBusiness(store)
 		if err := business.CreateRestaurant(c.Request.Context(), &data); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err,
-			})
+			panic(err)
 		}
 		data.GenerateUID(common.DBTypeRestaurant)
 		c.JSON(http.StatusOK, common.SimpleSuccessResponse(data.FakeID.String()))
