@@ -34,8 +34,8 @@ func NewRestaurantLikeRepository(restaurantStore ListRestaurantStore, likeStore 
 	}
 }
 
-func (r *restaurantLikeRepository) GetListRestaurantLike(ctx context.Context, filter *restaurantmodel.Filter, paging *common.Paging) ([]restaurantmodel.Restaurant, error) {
-	result, err := r.restaurantStore.ListDataByCondition(ctx, nil, filter, paging)
+func (r *restaurantLikeRepository) GetListRestaurantLike(ctx context.Context, conditions map[string]interface{}, filter *restaurantmodel.Filter, paging *common.Paging, moreKeys ...string) ([]restaurantmodel.Restaurant, error) {
+	result, err := r.restaurantStore.ListDataByCondition(ctx, nil, filter, paging, "User")
 	if err != nil {
 		return nil, err
 	}
