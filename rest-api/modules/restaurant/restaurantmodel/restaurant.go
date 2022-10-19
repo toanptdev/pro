@@ -11,9 +11,10 @@ const EntityName = "Restaurant"
 
 type Restaurant struct {
 	common.SQLModel `json:",inline"`
-	Name            string `json:"name" gorm:"column:name"`
-	Addr            string `json:"addr" gorm:"column:addr"`
-	LikedCount      int    `json:"liked_count" gorm:"-"`
+	Name            string             `json:"name" gorm:"column:name"`
+	Addr            string             `json:"addr" gorm:"column:addr"`
+	LikedCount      int                `json:"liked_count" gorm:"-"`
+	User            *common.SimpleUser `json:"user" gorm:"preload:false;foreignKey:ID;references:ID"`
 }
 
 func (r Restaurant) TableName() string {
@@ -51,4 +52,8 @@ func (r *RestaurantCreate) Validate() error {
 
 func (r *Restaurant) Mask(isAdminOwner bool) {
 	r.GenerateUID(common.DBTypeRestaurant)
+
+	if r.User != nil {
+		r.User.Mask()
+	}
 }

@@ -109,3 +109,13 @@ func ErrNoPermission(err error) *AppError {
 		"ErrNoPermission",
 	)
 }
+
+func ErrCannotListEntity(err error, entity string) *AppError {
+	return NewFullErrorResponse(
+		http.StatusBadRequest,
+		err,
+		fmt.Sprintf("can not list %v", strings.ToLower(entity)),
+		err.Error(),
+		fmt.Sprintf("ErrCannotList%v", entity),
+	)
+}

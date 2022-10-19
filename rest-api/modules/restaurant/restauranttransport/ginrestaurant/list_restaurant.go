@@ -51,5 +51,6 @@ func ListRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 			result[i].Mask(false)
 		}
 
+		c.JSON(http.StatusOK, common.NewSuccessResp(result, paging, filter))
 	}
 }
