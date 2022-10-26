@@ -2,8 +2,6 @@ package restaurantrepository
 
 import (
 	"context"
-	"log"
-
 	"rest-api/common"
 	"rest-api/modules/restaurant/restaurantmodel"
 )
@@ -40,23 +38,23 @@ func (r *restaurantLikeRepository) GetListRestaurantLike(ctx context.Context, co
 		return nil, err
 	}
 
-	ids := make([]int, len(result))
-
-	for k, v := range result {
-		ids[k] = v.ID
-	}
-
-	mapResLike, err := r.likeStore.GetRestaurantLikes(ctx, ids)
-
-	if err != nil {
-		log.Println("cannot get restaurant like: ", err)
-	}
-
-	if mapResLike != nil {
-		for k, v := range result {
-			result[k].LikedCount = mapResLike[v.ID]
-		}
-	}
+	//ids := make([]int, len(result))
+	//
+	//for k, v := range result {
+	//	ids[k] = v.ID
+	//}
+	//
+	//mapResLike, err := r.likeStore.GetRestaurantLikes(ctx, ids)
+	//
+	//if err != nil {
+	//	log.Println("cannot get restaurant like: ", err)
+	//}
+	//
+	//if mapResLike != nil {
+	//	for k, v := range result {
+	//		result[k].LikedCount = mapResLike[v.ID]
+	//	}
+	//}
 
 	return result, nil
 }

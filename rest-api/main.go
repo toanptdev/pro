@@ -56,7 +56,10 @@ func runService(db *gorm.DB, secret string) error {
 		restaurant.PATCH(":id", ginrestaurant.UpdateRestaurant(appContext))
 		restaurant.DELETE(":id", ginrestaurant.DeleteRestaurant(appContext))
 
-		restaurant.GET("/:id//liked-users", ginrestaurantlike.ListUsers(appContext))
+		restaurant.GET("/:id/liked-users", ginrestaurantlike.ListUsers(appContext))
+		restaurant.POST("/:id/like", ginrestaurantlike.LikeRestaurant(appContext))
+		restaurant.DELETE("/:id/unlike", ginrestaurantlike.UnLikeRestaurant(appContext))
+
 	}
 
 	return r.Run()

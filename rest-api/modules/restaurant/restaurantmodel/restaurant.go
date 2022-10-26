@@ -13,7 +13,7 @@ type Restaurant struct {
 	common.SQLModel `json:",inline"`
 	Name            string             `json:"name" gorm:"column:name"`
 	Addr            string             `json:"addr" gorm:"column:addr"`
-	LikedCount      int                `json:"liked_count" gorm:"-"`
+	LikedCount      int                `json:"liked_count" gorm:"column:like_count"`
 	User            *common.SimpleUser `json:"user" gorm:"preload:false;foreignKey:ID;references:ID"`
 }
 
